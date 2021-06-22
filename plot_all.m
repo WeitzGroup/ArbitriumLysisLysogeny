@@ -1,4 +1,4 @@
-%close all
+close all
 
 noise_on = 1;
 
@@ -8,9 +8,37 @@ else
     load('optimal_params_sensing_no_noise_latest_batch_new_prob_new_params.mat')
 end    
 
+%% params
+%% params
+% known values
+    pars.mu_max = 1.2;%1.2;
+    pars.R_in = 4;%4;
+    pars.J = 0;  % 0.2 prev
+    pars.e = 5*10^(-7); %5*10^(-7);
+    pars.d_R = 0.0;  % 0.2 prev
+    pars.d_S = 0.075;
+    pars.d_E = 0.075;
+    pars.d_L = 0.075;
+    pars.d_I = 0.075;
+    pars.lambda = 2;
+    pars.eta = 1;
+    pars.phi = 3.4*10^(-10);
+    pars.alpha_S = -0.1;
+    
+    % doubtful
+    pars.d_V = 0.075;              % table says 0.4?
+    % unknown
+    pars.d_A = 0.1;
+    pars.k_A_L = 5*10^7; % 6.022*10^6
+    pars.k_A_I = 5*10^7;
+    pars.A0 = 10^12; 
+    
+   % beta = tradeoff_value(input(3));
+    pars.beta = 50;
 
-[param1,param2,param3,param4,param5,param6,param7,param8,param9,param10,param11,param12,param13,param14,param15,param16,param17,param18] = return_parameters(1);
-probability_switch_pt_initial_guess = param18;
+
+
+probability_switch_pt_initial_guess = pars.A0;
 %tf_vector = [2,6,12,24,36,48,72,96,120,240];
 %tf_vector = [4,8,10,12,14,16];
 tf_vector = [12,18,24,30,36,42,48,72];
@@ -37,7 +65,7 @@ dt = 20/3600;
 Z_temp = zeros(length(tf_vector),7,length(0:dt:48));
 for i = 1:length(tf_vector)
     t = 0:dt:tf_vector(i);
-    Z = forward_euler(Z0, optimal_params_save(:,i), t, dt, noise_on, 0);
+    Z = forward_euler(Z0, optimal_params_save(:,i), t, dt, noise_on, 0, pars);
     Z_temp(i,:,1:length(t)) = Z;
 end    
 
@@ -101,9 +129,11 @@ legend('12 hours','18 hours','24 hours','36 hours','48 hours')
 
 %% figure 1 prob vs A for all tf
 for i = 0:1000
-    span_A(i+1) = 10^(9 + i/1000*8);
+    span_A(i+1) = 10^(8 + i/1000*8);
 end
 
+conversion_factor = 10^3*10^9/(6.022*10^23);    % ml, nano, mole
+span_A_nanomolar = span_A*conversion_factor;
 
 figure;
 prob_A = zeros(length(optimal_params_save),length(span_A));
@@ -116,16 +146,16 @@ for tf_idx = 1:length(optimal_params_save)
         prob_A(tf_idx, i) = probability(span_A(i), optimal_params_save(:,tf_idx), probability_switch_pt_initial_guess, noise_on, 0);
     end   
     
-    plot ((span_A),prob_A(tf_idx,:), 'color', color_cell{tf_idx},'Linewidth', line_thickness)
+    plot (span_A_nanomolar, prob_A(tf_idx,:), 'color', color_cell{tf_idx},'Linewidth', line_thickness)
     hold on
     end
 end    
 
-xlabel('$\mathrm{A~[molecules/\mu m^3]}$','Interpreter','latex')
-ylabel('Probability','Interpreter','latex')
+xlabel('Arbitrium~concentration, $A$ ~$\mathrm{[nM]}$','Interpreter','latex')
+ylabel('Probability~of~lysogeny, $P_{opt}(A)$','Interpreter','latex')
 ylim ([0,1]);
-xlim([1e12,1e15]);
-xticks([1e12 1e13 1e14 1e15])
+xlim([1e0,1e3]);
+xticks([ 1 10 100 1000])
 xticklabels({1,10,100,1000})
 
 set(gca,'TickLabelInterpreter','latex')
@@ -134,7 +164,7 @@ set(gca,'TickLabelInterpreter','latex')
 fig.PaperUnits = 'inches';
 set(gcf, 'color', 'white');
 set(gca, 'color', 'white');
-set(gca,'FontSize',20);
+set(gca,'FontSize', 30);
 set(gca,'xscale','log')
 
 % set(gca,'TickLabelInterpreter', 'latex');
@@ -146,13 +176,58 @@ pbaspect([2.5 1.5 1])
 legend('12 hours','18 hours','24 hours','36 hours','48 hours','Interpreter','latex')
 legend boxoff
 
+%% figure 1b prob vs A for different production rates
+load('optimal_params_r0_40_j_0_sweep.mat')
+
+
+conversion_factor = 10^3*10^9/(6.022*10^23);    % ml, nano, mole
+
+figure;
+prod_rate_vector_log = 5:0.25:8;
+prod_rate_vector = 10.^prod_rate_vector_log;
+plot(prod_rate_vector, conversion_factor*10^12*optimal_params_save(1:13,2,3), 'color','k', 'Marker',ms{1}, 'MarkerSize',9,'Linewidth', line_thickness,'LineStyle', ls{1})
+
+xlabel('Generation~rate, $k_{L, I}$ ~$\mathrm{[molecules/cell~h^{-1}]}$','Interpreter','latex')
+ylabel('Switching~concentration [nM]','Interpreter','latex')
+%ylim ([0,1]);
+xlim([10^5,10^8]);
+%xticks([5 5.5 6 6.5 7 7.5 8 8.5])
+%xticklabels({10^5,10^(5.5),10^6,10^(6.5),10^7,10^(7.5),10^8,10^(8.5)})
+set(gca,'TickLabelInterpreter','latex')
+%xticklabels({'10^{5}','10^{6}','10^{7}','10^{8}'})
+%xticks([10 10.5 11 11.5 12 12.5 13 13.5 14])
+%xticklabels({'10^{10}','10^{10.5}','10^{11}','10^{11.5}','10^{12}','10^{12.5}','10^{13}','10^{13.5}','10^{14}'})
+fig.PaperUnits = 'inches';
+set(gcf, 'color', 'white');
+set(gca, 'color', 'white');
+set(gca,'FontSize',25);
+set(gca,'xscale','log')
+set(gca,'yscale','log')
+% set(gca,'TickLabelInterpreter', 'latex');
+fig.PaperUnits = 'inches';
+pbaspect([2.5 1.5 1])
+%legend('2 hours','6 hours','12 hours','24 hours','36 hours','48 hours','72 hours','96 hours','120 hours','240 hours')
+%legend('4 hours','8 hours','10 hours','12 hours','14 hours', '16 hours')
+%legend('12 hours','18 hours','24 hours','30 hours','36 hours', '42 hours', '48 hours')
+
+xvals = prod_rate_vector;
+yvals = conversion_factor*10^12*optimal_params_save(1:13,2,3);
+
+Sxx = sum(xvals.^2) - sum(xvals)^2/length(xvals);
+Syy = sum(yvals.^2) - sum(yvals)^2/length(yvals);
+Sxy = dot(xvals, yvals) - sum(xvals)*sum(yvals)/length(yvals);
+
+R = Sxy/(sqrt(Sxx*Syy))
+
+
 %% figure 2a E(tf) and L(tf)
+load('optimal_params_r0_40_j_0.mat') % reset to original set
 state_final = zeros(2,length(tf_vector));
 frac_end = state_final;
 for tf_idx = 1:length(tf_vector)
     dt = 20/3600;    % dt = 20s, tf = 12 hours
     t = 0:dt:tf_vector(tf_idx);
-    Z = forward_euler(Z0, optimal_params_save(:,tf_idx), t, dt, noise_on, 0);
+    Z = forward_euler(Z0, optimal_params_save(:,tf_idx), t, dt, noise_on, 0, pars);
     state_final(:,tf_idx) = Z(3:4,end);
     frac_end(1,tf_idx) = state_final(1,tf_idx)/(state_final(1,tf_idx)+state_final(2,tf_idx));
     frac_end(2,tf_idx) = 1 - frac_end(1,tf_idx);
@@ -218,11 +293,11 @@ for tf_idx = 1:length(tf_vals)
     
     dt = 20/3600;    % dt = 20s, tf = 12 hours
     t = 0:dt:tf_vector(tf_vals(tf_idx));
-    Z = forward_euler(Z0, optimal_params_save(:,tf_vals(tf_idx)), t, dt, noise_on, 0);
+    Z = forward_euler(Z0, optimal_params_save(:,tf_vals(tf_idx)), t, dt, noise_on, 0, pars);
         
-    Z_fixed_lysis = forward_euler(Z0, optimal_params_save(:,tf_vals(tf_idx)), t, dt, noise_on, 0.01);
-    Z_fixed_mixed = forward_euler(Z0, optimal_params_save(:,tf_vals(tf_idx)), t, dt, noise_on, 0.5);
-    Z_fixed_lysogeny = forward_euler(Z0, optimal_params_save(:,tf_vals(tf_idx)), t, dt, noise_on, 1);
+    Z_fixed_lysis = forward_euler(Z0, optimal_params_save(:,tf_vals(tf_idx)), t, dt, noise_on, 0.01, pars);
+    Z_fixed_mixed = forward_euler(Z0, optimal_params_save(:,tf_vals(tf_idx)), t, dt, noise_on, 0.5, pars);
+    Z_fixed_lysogeny = forward_euler(Z0, optimal_params_save(:,tf_vals(tf_idx)), t, dt, noise_on, 1, pars);
     
     state_final_optimal(:,tf_idx) = Z(3:4,end);
     state_final_lysis(:,tf_idx) = Z_fixed_lysis(3:4,end);
@@ -320,7 +395,7 @@ xticks([12 24 36 48])
 fig.PaperUnits = 'inches';
 set(gcf, 'color', 'white');
 set(gca, 'color', 'white');
-set(gca,'FontSize',20);
+set(gca,'FontSize',30);
 fig.PaperUnits = 'inches';
 pbaspect([2.5 1.5 1])
 legend('E+L (Optimal)','E+L (Lysis)', 'E+L (Mixed)','E+L (Lysogeny)','Interpreter','latex')
@@ -334,12 +409,12 @@ set(gca,'TickLabelInterpreter','latex')
     dt = 20/3600;    % dt = 20s, tf = 12 hours
     t = 0:dt:48;
     index_for_48_hours = 7;
-    Z = forward_euler(Z0, optimal_params_save(:,index_for_48_hours), t, dt, noise_on, 0);
+    Z = forward_euler(Z0, optimal_params_save(:,index_for_48_hours), t, dt, noise_on, 0, pars);
     Z_48 = Z;
     save('Z_48.mat','Z')    
-    Z_fixed_lysis = forward_euler(Z0, optimal_params_save(:,index_for_48_hours), t, dt, noise_on, 0.01);
-    Z_fixed_mixed = forward_euler(Z0, optimal_params_save(:,index_for_48_hours), t, dt, noise_on, mixed_prob);
-    Z_fixed_lysogeny = forward_euler(Z0, optimal_params_save(:,index_for_48_hours), t, dt, noise_on, 1);
+    Z_fixed_lysis = forward_euler(Z0, optimal_params_save(:,index_for_48_hours), t, dt, noise_on, 0.01, pars);
+    Z_fixed_mixed = forward_euler(Z0, optimal_params_save(:,index_for_48_hours), t, dt, noise_on, mixed_prob, pars);
+    Z_fixed_lysogeny = forward_euler(Z0, optimal_params_save(:,index_for_48_hours), t, dt, noise_on, 1, pars);
     
     % lysis only
     figure;
@@ -455,6 +530,29 @@ set(gca,'TickLabelInterpreter','latex')
     set(gca,'TickLabelInterpreter','latex')
     legend boxoff
     
+    %% SAIRGA concentrations
+    figure;
+    t = 0:dt:12;
+    % convert to nM
+    multiplier = 10^12/(6.022*10^23);
+    %multiplier = 1;
+    plot(t,Z_12(7,:)*multiplier,'Linewidth', line_thickness)
+    hold on
+    t = 0:dt:18;
+    plot(t,Z_18(7,:)*multiplier,'Linewidth', line_thickness)
+    hold on
+    t = 0:dt:24;
+    plot(t,Z_24(7,:)*multiplier,'Linewidth', line_thickness)
+    hold on
+    t = 0:dt:36;
+    plot(t,Z_36(7,:)*multiplier,'Linewidth', line_thickness)
+    hold on
+    t = 0:dt:48;
+    plot(t,Z_48(7,:)*multiplier,'Linewidth', line_thickness)
+    hold on
+    xlabel('Time [hours]','Interpreter','latex')
+    ylabel('SAIRGA concentration in nM')
+    legend('12 hours','18 hours','24 hours','36 hours','48 hours', 'Interpreter', 'latex')
     %% 12, 18, 24, 48
     figure;
     subplot(2,8,[1,2])
@@ -466,6 +564,12 @@ set(gca,'TickLabelInterpreter','latex')
     xticks([0  6 12])
     ylim([1e3, 1e9]);
     yticks([1e3,1e5, 1e7, 1e9])
+    set(gca,'yscale','log')
+    yyaxis right
+    hold on
+    plot(t, Z_12(7,:)*conversion_factor,'Linewidth', line_thickness);
+    ylim([1e0, 1e4]);
+    yticks([1e0,1e2, 1e4])
     title('$\mathrm{T_{max}=12}$','Interpreter','latex')
     set(gca,'FontSize',20);
     fig.PaperUnits = 'inches';
@@ -488,12 +592,19 @@ set(gca,'TickLabelInterpreter','latex')
     hold on
     %xlabel('$Time~[hours]$','Interpreter','latex')
     %ylabel('$Population$','Interpreter','latex')
+    
     title('$\mathrm{T_{max}=18}$','Interpreter','latex')
     xlim([0,18]);
     xticks([0  6 12 18])
     ylim([1e3, 1e9]);
-    yticks([1e3 1e5 1e7 ])
+    yticks([1e3,1e5, 1e7, 1e9])
     %legend('S','E','L','V')
+    set(gca,'yscale','log')
+    yyaxis right
+    hold on
+    plot(t, Z_18(7,:)*conversion_factor,'Linewidth', line_thickness);
+    ylim([1e0, 1e4]);
+    yticks([1e0,1e2, 1e4])
     set(gca,'FontSize',20);
     fig.PaperUnits = 'inches';
     %pbaspect([2.5 1.5 1])
@@ -513,12 +624,21 @@ set(gca,'TickLabelInterpreter','latex')
     plot(t, (Z_24(6,:)),  'Linewidth', line_thickness)
     hold on
     %xlabel('$Time~[hours]$','Interpreter','latex')
-    ylabel('$\mathrm{Population~[ml^{-1}]}$','Interpreter','latex')
+    %ylabel('$\mathrm{Population~[ml^{-1}]}$','Interpreter','latex')
+    set(gca,'yscale','log')
+    
     title('$\mathrm{T_{max}=24}$','Interpreter','latex')
     xlim([0,24]);
     xticks([0  6 12 18 24])
     ylim([1e3, 1e9]);
     yticks([1e3 1e5 1e7])
+    yyaxis right
+    hold on
+    plot(t, Z_24(7,:)*conversion_factor,'Linewidth', line_thickness);
+    ylim([1e0, 1e4]);
+    yticks([1e0,1e2, 1e4])
+    ylabel('$\mathrm{Arbitrium~[nM]}$','Interpreter','latex')
+
     %legend('S','E','L','V')
     set(gca,'FontSize',20);
     fig.PaperUnits = 'inches';
@@ -545,6 +665,12 @@ set(gca,'TickLabelInterpreter','latex')
     ylim([1e3, 1e9]);
     yticks([1e3 1e5 1e7 ])
     %legend('S','E','L','V')
+    set(gca,'yscale','log')
+    yyaxis right
+    hold on
+    plot(t, Z_36(7,:)*conversion_factor,'Linewidth', line_thickness);
+    ylim([1e0, 1e4]);
+    yticks([1e0,1e2, 1e4])
     title('$\mathrm{T_{max}=36}$','Interpreter','latex')
     set(gca,'FontSize',20);
     fig.PaperUnits = 'inches';
@@ -572,11 +698,17 @@ set(gca,'TickLabelInterpreter','latex')
     ylim([1e3, 1e9]);
     yticks([1e3 1e5 1e7])
     %legend('S','E','L','V')
+    set(gca,'yscale','log')
+    yyaxis right
+    hold on
+    plot(t, Z_48(7,:)*conversion_factor,'Linewidth', line_thickness);
+    ylim([1e0, 1e4]);
+    yticks([1e0,1e2, 1e4])
     title('$\mathrm{T_{max}=48}$','Interpreter','latex')
     set(gca,'FontSize',20);
     fig.PaperUnits = 'inches';
     %pbaspect([2.5 1.5 1])
-    legend('S','E','L','V','Interpreter', 'latex')
+    legend('S','E','L','V','A','Interpreter', 'latex')
     legend boxoff
     set(gca,'yscale','log')
     set(gca,'TickLabelInterpreter','latex')
@@ -594,7 +726,7 @@ for prob = 0:0.1:1
     if prob == 0
         prob_new = 0.01;
     end    
-    Z_temp = forward_euler(Z0, optimal_params_save(:,7), t, dt, noise_on, prob_new);
+    Z_temp = forward_euler(Z0, optimal_params_save(:,7), t, dt, noise_on, prob_new, pars);
     Z_end(idx,1:2) = Z_temp(3:4,end);
     Z_end(idx,3) = Z_end(idx,1)+Z_end(idx,2);
 end
@@ -608,7 +740,7 @@ ylabel('$\mathrm{Population~[ml^{-1}]}$','Interpreter','latex')
 xlabel('Lysogeny Probability, P','Interpreter','latex')
 set(gcf, 'color', 'white');
 set(gca, 'color', 'white');
-set(gca,'FontSize',20);
+set(gca,'FontSize',30);
 set(gca,'yscale','log')
 xticks(1:12)
 yticks([1,1e2,1e4,1e6])
@@ -625,6 +757,20 @@ set(gca,'TickLabelInterpreter','latex')
 pbaspect([2.5 1.5 1])
 legend boxoff
 
+%% create matrix of optimal params for all J and r0
+optimal_params_different_J = zeros(4,2,8);
+for i = 0:3
+    load (['optimal_params_r0_40_j_' num2str(i) '.mat']);
+    optimal_params_different_J(i+1,:,:) = optimal_params_save;
+end    
+save('optimal_params_different_J.mat','optimal_params_different_J');
+
+optimal_params_different_r0 = zeros(4,2,8);
+for i = 1:4
+    load (['optimal_params_r0_' num2str(20+20*i) '_j_0.mat']);
+    optimal_params_different_r0(i,:,:) = optimal_params_save;
+end 
+save('optimal_params_different_r0.mat','optimal_params_different_r0');
  %% different  J graph
 load('optimal_params_different_J.mat') 
 figure;
@@ -685,7 +831,7 @@ figure;
 matrix_vals = zeros(4,8);
 for i = 1:4
     for j = 1:8
-        matrix_vals(5-i,j) = optimal_params_different_J(i,2,j);
+        matrix_vals(5-i,j) = optimal_params_different_J(i,2,j)*conversion_factor*1e12;
     end
 end    
 
@@ -694,7 +840,7 @@ yvalues = {'J = 0','J = 1','J = 2','J = 3'};
 xvalues = {'12','18','24','30','36','42','48'};
 [gX gY]= meshgrid(12:6:48,40:20:100);
 
-h = heatmap(xvalues,yvalues,cdata,'CellLabelColor','none','ColorLimits',[0 1500]);
+h = heatmap(xvalues,yvalues,cdata,'CellLabelColor','none','ColorLimits',[0 2000]);
 set(gca,'FontSize',20);
 
 h.YDisplayLabels = repmat({''}, size(h.YData));  %remove row labels
@@ -720,41 +866,15 @@ set(gca,'FontSize',20);
 L_matrix_diff_J = zeros(4,8);
 E_matrix_diff_J = zeros(4,8);
 
-% need to manually change param values, terrible code
-%% j = 0
+for i = 1:4
+    pars.J = i-1;
 for j = 1:8
     optimal_param = [optimal_params_different_J(1,1,j),optimal_params_different_J(1,2,j)];
     t = 0:dt:tf_vector(j);
-    Z = forward_euler(Z0, optimal_param, t, dt, noise_on, 0);
-    E_matrix_diff_J(1,j) = Z(3,end);
-    L_matrix_diff_J(1,j) = Z(4,end);
+    Z = forward_euler(Z0, optimal_param, t, dt, noise_on, 0, pars);
+    E_matrix_diff_J(i,j) = Z(3,end);
+    L_matrix_diff_J(i,j) = Z(4,end);
 end
-
-%% j = 1
-for j = 1:8
-    optimal_param = [optimal_params_different_J(2,1,j),optimal_params_different_J(2,2,j)];
-    t = 0:dt:tf_vector(j);
-    Z = forward_euler(Z0, optimal_param, t, dt, noise_on, 0);
-    E_matrix_diff_J(2,j) = Z(3,end);
-    L_matrix_diff_J(2,j) = Z(4,end);
-end
-
-%% j = 2
-for j = 1:8
-    optimal_param = [optimal_params_different_J(3,1,j),optimal_params_different_J(3,2,j)];
-    t = 0:dt:tf_vector(j);
-    Z = forward_euler(Z0, optimal_param, t, dt, noise_on, 0);
-    E_matrix_diff_J(3,j) = Z(3,end);
-    L_matrix_diff_J(3,j) = Z(4,end);
-end
-
-%% j = 3
-for j = 1:8
-    optimal_param = [optimal_params_different_J(4,1,j),optimal_params_different_J(4,2,j)];
-    t = 0:dt:tf_vector(j);
-    Z = forward_euler(Z0, optimal_param, t, dt, noise_on, 0);
-    E_matrix_diff_J(4,j) = Z(3,end);
-    L_matrix_diff_J(4,j) = Z(4,end);
 end
 
 fitness_matrix_J = L_matrix_diff_J + E_matrix_diff_J;
@@ -822,7 +942,7 @@ yvalues = {'J = 0','J = 1','J = 2','J = 3'};
 xvalues = {'12','18','24','30','36','42','48'};
 [gX gY]= meshgrid(12:6:48,40:20:100);
 
-h = heatmap(xvalues,yvalues,cdata,'CellLabelColor','none','ColorLimits',[0 0.6]);
+h = heatmap(xvalues,yvalues,cdata,'CellLabelColor','none','ColorLimits',[0 0.7]);
 set(gca,'FontSize',20);
 
 h.YDisplayLabels = repmat({''}, size(h.YData));  %remove row labels
@@ -886,7 +1006,7 @@ figure;
 matrix_vals = zeros(4,8);
 for i = 1:4
     for j = 1:8
-        matrix_vals(5-i,j) = optimal_params_different_r0(i,2,j);
+        matrix_vals(5-i,j) = optimal_params_different_r0(i,2,j)*conversion_factor*1e12;
     end
 end    
 
@@ -895,7 +1015,7 @@ yvalues = {'R_0 = 40','R_0 = 60','R_0 = 80','R_0 = 100'};
 xvalues = {'12','18','24','30','36','42','48'};
 [gX gY]= meshgrid(12:6:48,40:20:100);
 
-h = heatmap(xvalues,yvalues,cdata,'CellLabelColor','none','ColorLimits',[0 1500]);
+h = heatmap(xvalues,yvalues,cdata,'CellLabelColor','none','ColorLimits',[0 2000]);
 set(gca,'FontSize',20);
 
 h.YDisplayLabels = repmat({''}, size(h.YData));  %remove row labels
@@ -921,14 +1041,13 @@ set(gca,'FontSize',20);
 L_matrix_diff_r0 = zeros(4,8);
 E_matrix_diff_r0 = zeros(4,8);
 
-% need to manually change param values, terrible code
 
 for i = 1:4
     Z0(1) = 20 + 20*i;
 for j = 1:8
     optimal_param = [optimal_params_different_r0(i,1,j),optimal_params_different_r0(i,2,j)];
     t = 0:dt:tf_vector(j);
-    Z = forward_euler(Z0, optimal_param, t, dt, noise_on, 0);
+    Z = forward_euler(Z0, optimal_param, t, dt, noise_on, 0, pars);
     E_matrix_diff_r0(i,j) = Z(3,end);
     L_matrix_diff_r0(i,j) = Z(4,end);
 end
@@ -1000,7 +1119,7 @@ yvalues = {'J = 0','J = 1','J = 2','J = 3'};
 xvalues = {'12','18','24','30','36','42','48'};
 [gX gY]= meshgrid(12:6:48,40:20:100);
 
-h = heatmap(xvalues,yvalues,cdata,'CellLabelColor','none','ColorLimits',[0 0.6]);
+h = heatmap(xvalues,yvalues,cdata,'CellLabelColor','none','ColorLimits',[0 0.7]);
 set(gca,'FontSize',20);
 
 h.YDisplayLabels = repmat({''}, size(h.YData));  %remove row labels
@@ -1059,8 +1178,9 @@ set(gca,'FontSize',20);
 
 
 %% generate titles in latex
+%{
 figure;
-title('$\mathrm{Switch~Point~[molecules/\mu m^3]}$','Interpreter','latex')
+title('$\mathrm{Switch~Point~[nM]}$','Interpreter','latex')
 set(gca,'FontSize',20);
 
 figure;
@@ -1090,4 +1210,5 @@ xlabel('Time [Hours]','Interpreter','latex')
 ylabel('$\mathrm{Resource~Influx~[\mu g/ml~h^{-1}]}$','Interpreter','latex')
 
 set(gca,'FontSize',20);
+%}
 

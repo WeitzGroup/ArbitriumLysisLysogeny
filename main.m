@@ -5,6 +5,9 @@ clear all
 dt = 20/3600; tf =48;   % dt = 20s, tf = 12 hours
 t = 0:dt:tf;
 
+
+
+
 %% initial concentrations
 R0 = 10;
 S0 = 10^7;
@@ -15,6 +18,8 @@ V0 = 10^5;
 A0 = 0;
 
 Z0 = [R0,S0,E0,L0,I0,V0,A0];
+
+
 
 %% vector to store states 
 Z = zeros(7,length(t));
@@ -53,7 +58,7 @@ beta = 0.3;
 N = 5;
 cut_off_for_input_change = 0.01;
 loop_iter = 1;
-J(loop_iter) = cost_function(Z0, optimal_input_old, t, dt);
+J(loop_iter) = cost_function(Z0, optimal_input_old, t, dt, pars);
 
 %% termination condition
 change_in_J = J(loop_iter);
@@ -64,25 +69,25 @@ while change_in_J > cut_off_for_J_change && loop_iter < 30
 
     %% step 1
     disp('step 1')
-    Z = forward_euler(Z0, optimal_input_old, t, dt);            % state trajectory (fwd)
+    Z = forward_euler(Z0, optimal_input_old, t, dt, pars);            % state trajectory (fwd)
     
     %% step 2
     disp('step 2')
     lambda_tf = [0,0,1,1,0,0,0]';
-    lambda = backward_euler_costate(lambda_tf, Z, optimal_input_old, t, dt);
+    lambda = backward_euler_costate(lambda_tf, Z, optimal_input_old, t, dt, pars);
     
     %% step 3
     disp('step 3')
     dphi_dx = [0,0,0,1,1,0,0];
-    grad_j = grad_J(lambda, Z, optimal_input_old, t, dt);
+    grad_j = grad_J(lambda, Z, optimal_input_old, t, dt, pars);
     if norm(grad_j)>1
         grad_j = grad_j / norm(grad_j);             % normalize?
     end
     %% step 4
     disp('step 4')    
-    new_input = minimum_step(Z0, grad_j, optimal_input_old,t,dt,alpha,beta);
+    new_input = minimum_step(Z0, grad_j, optimal_input_old,t,dt,alpha,beta, pars);
     
-    J(loop_iter) = cost_function(Z0, new_input, t, dt);
+    J(loop_iter) = cost_function(Z0, new_input, t, dt, pars);
     change_in_J = J(loop_iter) - J(loop_iter-1);    % update termination condition
     if change_in_J>0
         optimal_input_old = new_input;                  % assign to optimal_input_old for next iteration
