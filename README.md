@@ -36,9 +36,9 @@ minimum_step.m - takes Armijo step based on gradient w.r.t. optimization paramet
 Generating optimal parameters:
 Run file named 'main_all.m'; generates a mat file with saved optimal parameters. 
 
-Parameters to edit: 
+Parameters to edit (present in file main_all.m): 
 
-Line 40 changes the production rate from 5*10^7 to 8*10^7 (Relevant for Fig. S1); other results only use base param of 5*10^7
+Line 40 changes the production rate from 10^5 to 10^8 (Relevant for Fig. S1); Fig. 3 used production rates of 10^7 and 5*10^7; other results only use base param of 5*10^7
 
 Line 46 changes time horizon (currently fixed at 24 hours, can be done from 12 to 48 hours)
 
