@@ -1,11 +1,11 @@
-function u_new = minimum_step(Z0, grad_J, u, t, dt, alpha, beta, noise_on, fixed_prob)
+function u_new = minimum_step(Z0, grad_J, u, t, dt, alpha, beta, noise_on, fixed_prob, pars)
 
-    J_old = cost_function(Z0, u, t, dt, noise_on,  fixed_prob);
+    J_old = cost_function(Z0, u, t, dt, noise_on,  fixed_prob, pars);
     diff_max = 0.0;
     idx_max = -1;
 %    while J_new - J_old <= alpha*beta^k*norm(grad_J)
     for k = 0:40
-        J_new = cost_function(Z0, u + beta^k*grad_J', t, dt, noise_on, fixed_prob);
+        J_new = cost_function(Z0, u + beta^k*grad_J', t, dt, noise_on, fixed_prob, pars);
         
         diff = J_new - J_old;
         
