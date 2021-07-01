@@ -2,7 +2,7 @@
 
 Time-scales modulate optimal lysis-lysogeny decision switches and near-term phage fitness
 
-Code to find optimal switching strategy from lysis to lysogeny to maximize fitness. The probability of lysogeny is modelled as a function of the optimization paramters and the state. Based on the cost function (here the fitness of the phage), the optimal parameters are computed through gradient descent using Armijo stepp-size.
+Code to find optimal switching strategy from lysis to lysogeny to maximize fitness. The probability of lysogeny is modelled as a function of the optimization paramters and the state. Based on the cost function (here the fitness of the phage), the optimal parameters are computed through gradient descent using Armijo step-size. 
 
 Navigating the code:
 
@@ -45,7 +45,7 @@ Line 46 changes time horizon (currently fixed at 24 hours, can be done from 12 t
  
 Figures:
 
-Run file named 'plot_all.m' to generate all figures in paper - no changes needed to file (all relevant data to generate figures is already included in repo as .mat files).
+Run file named 'plot_all.m' to generate all figures in paper - no changes needed to file (all relevant data to generate figures is already included in repo as .mat files). Please put the data files in the same location as the code to generate figures.
 
 Figure 2:
 Temperate phage-bacteria infection dynamics for different fixed probabilities of lysogeny (P= 0, P= 0.5 or P= 1 wherePis the probability of lysogeny) for 48 hours with an MOI of 0.01. 
