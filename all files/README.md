@@ -38,7 +38,7 @@ Run file named 'main_all.m'; generates a mat file with saved optimal parameters.
 
 Parameters to edit (present in file main_all.m): 
 
-Line 40 changes the production rate from 10^5 to 10^8 (Relevant for Fig. S1); Fig. 3 used production rates of 10^7 and 5*10^7; other results only use base param of 5*10^7
+Line 36 changes the production rate (from 10^5 to 10^8 for Fig. S1, currently set to single value of 5 $\times$ 10^7); Fig. 3 used production rates of 10^7 and 5 $\times$ 10^7; other results only use base param of 5 \times 10^7
 
 Line 46 changes time horizon (currently fixed at 24 hours, can be done from 12 to 48 hours)
 
