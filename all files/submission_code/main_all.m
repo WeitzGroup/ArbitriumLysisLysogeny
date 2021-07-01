@@ -129,8 +129,6 @@ optimal_params_save(prod_rate_iter,:,tf_index) = optimal_input_old;
 optimal_params_no_production(:,tf_index) = optimal_params_save(1,:,tf_index);
 
 end
-
-
 end
 
 optimal_params_save = optimal_params_no_production;
