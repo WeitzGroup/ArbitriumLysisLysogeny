@@ -68,7 +68,6 @@ J_max = 0;
 
 sigmoid_shaping_values = [-10 0.0001 1 10 ];
 switch_point_values = [10^(-8) 0.0001 0.1 0.3 1 2 5 10 20 30 50 100 200 1000];
-%optimal_input_brute = [1;1];
 J_brute = zeros(length(sigmoid_shaping_values), length(switch_point_values));
 for sigmoid_shaping = sigmoid_shaping_values
     index_1 = index_1+1;
