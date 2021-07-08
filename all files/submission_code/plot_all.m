@@ -498,35 +498,6 @@ for tf_idx = 1:length(tf_vals)
     state_final_half(:,tf_idx) = Z_fixed_mixed(3:4,end);
 end
 
-%% Figure 5(b) birth states comparison with fixed probability
-
-figure;
-plot(tf_vector, (state_final_optimal(1,:)+state_final_optimal(2,:)), 'color','k', 'Marker',ms{1}, 'MarkerSize',9,'Linewidth', line_thickness,'LineStyle', ls{1})
-hold on
-plot(tf_vector, (state_final_lysis(1,:)+state_final_lysis(2,:)), 'color','k', 'Marker',ms{2},'MarkerSize',9,'Linewidth', line_thickness,'LineStyle', ls{2})
-hold on
-plot(tf_vector, (state_final_half(1,:)+state_final_half(2,:)), 'color','k', 'Marker',ms{3}, 'MarkerSize',9,'Linewidth', line_thickness,'LineStyle', ls{3})
-hold on    
-plot(tf_vector, (state_final_lysogeny(1,:)+state_final_lysogeny(2,:)),'color','k', 'Marker',ms{4}, 'MarkerSize',9,'Linewidth', line_thickness,'LineStyle', ls{4})
-hold on 
-xlabel('Time [hours]','Interpreter','latex')
-ylabel('$\mathrm{Population~[ml^{-1}]}$','Interpreter','latex')
-ylim([1e2,1e7])
-yticks([1e2 1e3 1e4 1e5 1e6 1e7 1e8])
-xlim([12,48])
-xticks([12 24 36 48])
-fig.PaperUnits = 'inches';
-set(gcf, 'color', 'white');
-set(gca, 'color', 'white');
-set(gca,'FontSize',30);
-fig.PaperUnits = 'inches';
-pbaspect([2.5 1.5 1])
-legend('E+L (Optimal)','E+L (Lysis)', 'E+L (Mixed)','E+L (Lysogeny)','Interpreter','latex')
-set(gca,'yscale','log')
-legend boxoff
-set(gca,'TickLabelInterpreter','latex')
-
-
 %% Fig. 5(a)
 Z_end = zeros(12,3);
 t = 0:dt:48;
@@ -568,6 +539,37 @@ set(gca,'TickLabelInterpreter','latex')
 pbaspect([2.5 1.5 1])
 legend boxoff
 
+%% Figure 5(b) birth states comparison with fixed probability
+
+figure;
+plot(tf_vector, (state_final_optimal(1,:)+state_final_optimal(2,:)), 'color','k', 'Marker',ms{1}, 'MarkerSize',9,'Linewidth', line_thickness,'LineStyle', ls{1})
+hold on
+plot(tf_vector, (state_final_lysis(1,:)+state_final_lysis(2,:)), 'color','k', 'Marker',ms{2},'MarkerSize',9,'Linewidth', line_thickness,'LineStyle', ls{2})
+hold on
+plot(tf_vector, (state_final_half(1,:)+state_final_half(2,:)), 'color','k', 'Marker',ms{3}, 'MarkerSize',9,'Linewidth', line_thickness,'LineStyle', ls{3})
+hold on    
+plot(tf_vector, (state_final_lysogeny(1,:)+state_final_lysogeny(2,:)),'color','k', 'Marker',ms{4}, 'MarkerSize',9,'Linewidth', line_thickness,'LineStyle', ls{4})
+hold on 
+xlabel('Time [hours]','Interpreter','latex')
+ylabel('$\mathrm{Population~[ml^{-1}]}$','Interpreter','latex')
+ylim([1e2,1e7])
+yticks([1e2 1e3 1e4 1e5 1e6 1e7 1e8])
+xlim([12,48])
+xticks([12 24 36 48])
+fig.PaperUnits = 'inches';
+set(gcf, 'color', 'white');
+set(gca, 'color', 'white');
+set(gca,'FontSize',30);
+fig.PaperUnits = 'inches';
+pbaspect([2.5 1.5 1])
+legend('E+L (Optimal)','E+L (Lysis)', 'E+L (Mixed)','E+L (Lysogeny)','Interpreter','latex')
+set(gca,'yscale','log')
+legend boxoff
+set(gca,'TickLabelInterpreter','latex')
+
+
+
+
 %% subsequent code for Fig. 6
 %% create matrix of optimal params for all J and r0
 optimal_params_different_J = zeros(4,2,8);
@@ -588,144 +590,6 @@ end
 phi = 3.4*10^(-10);
 d_V = 0.05; 
 E_0 = phi*S0*V0/(phi*S0+d_V);
-
-
-
-%% Fig. 6(d) optimal params J
-figure;
-matrix_vals = zeros(4,8);
-for i = 1:4
-    for j = 1:8
-        matrix_vals(5-i,j) = optimal_params_different_J(i,2,j)*conversion_factor*1e12;
-    end
-end    
-
-cdata = matrix_vals(:,1:7);
-yvalues = {'J = 0','J = 1','J = 2','J = 3'};
-xvalues = {'12','18','24','30','36','42','48'};
-%[gX gY]= meshgrid(12:6:48,40:20:100);
-
-h = heatmap(xvalues,yvalues,cdata,'CellLabelColor','none','ColorLimits',[0 2000]);
-set(gca,'FontSize',20);
-
-h.YDisplayLabels = repmat({''}, size(h.YData));  %remove row labels
-h.XDisplayLabels = repmat({''}, size(h.XData));  %remove row labels
-a2 = axes('Position', h.Position);               %new axis on top
-a2.Color = 'none';                               %new axis transparent
-a2.YTick = 1:size(h.ColorData,1);                %set y ticks to number of rows
-a2.XTick = 1:size(h.ColorData,2);                %Remove xtick
-ylim(a2, [0.5, size(h.ColorData,1)+.5])          %center the tick marks
-
-a2.YTickLabel = {'$J = 0$','$J = 1$','$J = 2$','$J = 3$'}; 
-
-xlim(a2, [0.5, size(h.ColorData,2)+.5])          %center the tick marks
-a2.XTickLabel = {'$12$','$18$','$24$','$30$','$36$','$42$','$48$'}; 
-
-
-set(gca,'TickLabelInterpreter','latex')
-
-set(gca,'FontSize',20);
-
-
-%% compute end state
-L_matrix_diff_J = zeros(4,8);
-E_matrix_diff_J = zeros(4,8);
-
-for i = 1:4
-    pars.J = i-1;
-for j = 1:8
-    optimal_param = [optimal_params_different_J(1,1,j),optimal_params_different_J(1,2,j)];
-    t = 0:dt:tf_vector(j);
-    Z = forward_euler(Z0, optimal_param, t, dt, noise_on, 0, pars);
-    E_matrix_diff_J(i,j) = Z(3,end);
-    L_matrix_diff_J(i,j) = Z(4,end);
-end
-end
-
-fitness_matrix_J = L_matrix_diff_J + E_matrix_diff_J;
-L_frac_matrix_J = L_matrix_diff_J./(L_matrix_diff_J + E_matrix_diff_J);
-  
-L_frac_matrix_J_saved = L_frac_matrix_J;
-fitness_matrix_J_saved = fitness_matrix_J;
-%save('L_frac_matrix_J_saved.mat','L_frac_matrix_J_saved')   %(only do once)
-%save('fitness_matrix_J_saved.mat','fitness_matrix_J_saved') %(only do once)
-%% Fig. 6(f) growth rate J
-load('L_frac_matrix_J_saved.mat')
-load('fitness_matrix_J_saved.mat')
-
-
-figure;
-matrix_vals = zeros(4,8);
-growth_rate = zeros(4,8);
-
-for i = 1:4
-    for j = 1:8
-        growth_rate(i,j) = (1/tf_vector(j))*log(fitness_matrix_J_saved(i,j)/E_0);
-        matrix_vals(5-i,j) = growth_rate(i,j);
-    end
-end    
-
-cdata = matrix_vals(:,1:7);
-yvalues = {'J = 0','J = 1','J = 2','J = 3'};
-xvalues = {'12','18','24','30','36','42','48'};
-%[gX gY]= meshgrid(12:6:48,40:20:100);
-
-h = heatmap(xvalues,yvalues,cdata,'CellLabelColor','none','ColorLimits',[0 0.7]);
-set(gca,'FontSize',20);
-
-h.YDisplayLabels = repmat({''}, size(h.YData));  %remove row labels
-h.XDisplayLabels = repmat({''}, size(h.XData));  %remove row labels
-a2 = axes('Position', h.Position);               %new axis on top
-a2.Color = 'none';                               %new axis transparent
-a2.YTick = 1:size(h.ColorData,1);                %set y ticks to number of rows
-a2.XTick = 1:size(h.ColorData,2);                %Remove xtick
-ylim(a2, [0.5, size(h.ColorData,1)+.5])          %center the tick marks
-
-a2.YTickLabel = {'$J = 0$','$J = 1$','$J = 2$','$J = 3$'}; 
-
-xlim(a2, [0.5, size(h.ColorData,2)+.5])          %center the tick marks
-a2.XTickLabel = {'$12$','$18$','$24$','$30$','$36$','$42$','$48$'}; 
-
-
-set(gca,'TickLabelInterpreter','latex')
-
-set(gca,'FontSize',20);
-
-%% Fig 6(e) frac_L J
-figure;
-matrix_vals = zeros(4,8);
-for i = 1:4
-    for j = 1:8
-        matrix_vals(5-i,j) = L_frac_matrix_J_saved(i,j);
-    end
-end    
-
-cdata = matrix_vals(:,1:7);
-yvalues = {'J = 0','J = 1','J = 2','J = 3'};
-xvalues = {'12','18','24','30','36','42','48'};
-%[gX gY]= meshgrid(12:6:48,40:20:100);
-
-h = heatmap(xvalues,yvalues,cdata,'CellLabelColor','none','ColorLimits',[0.7 1]);
-set(gca,'FontSize',20);
-
-h.YDisplayLabels = repmat({''}, size(h.YData));  %remove row labels
-h.XDisplayLabels = repmat({''}, size(h.XData));  %remove row labels
-a2 = axes('Position', h.Position);               %new axis on top
-a2.Color = 'none';                               %new axis transparent
-a2.YTick = 1:size(h.ColorData,1);                %set y ticks to number of rows
-a2.XTick = 1:size(h.ColorData,2);                %Remove xtick
-ylim(a2, [0.5, size(h.ColorData,1)+.5])          %center the tick marks
-
-a2.YTickLabel = {'$J = 0$','$J = 1$','$J = 2$','$J = 3$'}; 
-
-xlim(a2, [0.5, size(h.ColorData,2)+.5])          %center the tick marks
-a2.XTickLabel = {'$12$','$18$','$24$','$30$','$36$','$42$','$48$'}; 
-
-
-set(gca,'TickLabelInterpreter','latex')
-
-set(gca,'FontSize',20);
-
 
 %% heat map r0
 
@@ -758,10 +622,7 @@ a2.YTickLabel = {'$R_0=40$','$R_0=60$','$R_0=80$','$R_0=100$'};
 
 xlim(a2, [0.5, size(h.ColorData,2)+.5])          %center the tick marks
 a2.XTickLabel = {'$12$','$18$','$24$','$30$','$36$','$42$','$48$'}; 
-
-
 set(gca,'TickLabelInterpreter','latex')
-
 set(gca,'FontSize',20);
 
 %% compute end state r0
@@ -789,50 +650,10 @@ L_frac_matrix_r0_saved = L_frac_matrix_r0;
 fitness_matrix_r0_saved = fitness_matrix_r0;
 %save('L_frac_matrix_r0_saved.mat','L_frac_matrix_r0_saved')   %(only do once)
 %save('fitness_matrix_r0_saved.mat','fitness_matrix_r0_saved') %(only do once)
-%% Fig. 6(c) growth rate r0
+%% Fig. 6(b) growth rate r0
 load('L_frac_matrix_r0_saved.mat')
 load('fitness_matrix_r0_saved.mat')
 
-
-figure;
-matrix_vals = zeros(4,8);
-growth_rate = zeros(4,8);
-
-for i = 1:4
-    for j = 1:8
-        growth_rate(i,j) = (1/tf_vector(j))*log(fitness_matrix_r0_saved(i,j)/E_0);
-        matrix_vals(5-i,j) = growth_rate(i,j);
-    end
-end    
-
-cdata = matrix_vals(:,1:7);
-yvalues = {'J = 0','J = 1','J = 2','J = 3'};
-xvalues = {'12','18','24','30','36','42','48'};
-%[gX gY]= meshgrid(12:6:48,40:20:100);
-
-h = heatmap(xvalues,yvalues,cdata,'CellLabelColor','none','ColorLimits',[0 0.7]);
-set(gca,'FontSize',20);
-
-h.YDisplayLabels = repmat({''}, size(h.YData));  %remove row labels
-h.XDisplayLabels = repmat({''}, size(h.XData));  %remove row labels
-a2 = axes('Position', h.Position);               %new axis on top
-a2.Color = 'none';                               %new axis transparent
-a2.YTick = 1:size(h.ColorData,1);                %set y ticks to number of rows
-a2.XTick = 1:size(h.ColorData,2);                %Remove xtick
-ylim(a2, [0.5, size(h.ColorData,1)+.5])          %center the tick marks
-
-a2.YTickLabel = {'$R_0=40$','$R_0=60$','$R_0=80$','$R_0=100$'}; 
-
-xlim(a2, [0.5, size(h.ColorData,2)+.5])          %center the tick marks
-a2.XTickLabel = {'$12$','$18$','$24$','$30$','$36$','$42$','$48$'}; 
-
-
-set(gca,'TickLabelInterpreter','latex')
-
-set(gca,'FontSize',20);
-
-
-%% Fig. 6(b) frac_L r0
 figure;
 matrix_vals = zeros(4,8);
 for i = 1:4
@@ -867,11 +688,171 @@ set(gca,'TickLabelInterpreter','latex')
 
 set(gca,'FontSize',20);
 
+%% Fig. 6(c) frac_L r0
+figure;
+matrix_vals = zeros(4,8);
+growth_rate = zeros(4,8);
+
+for i = 1:4
+    for j = 1:8
+        growth_rate(i,j) = (1/tf_vector(j))*log(fitness_matrix_r0_saved(i,j)/E_0);
+        matrix_vals(5-i,j) = growth_rate(i,j);
+    end
+end    
+
+cdata = matrix_vals(:,1:7);
+yvalues = {'J = 0','J = 1','J = 2','J = 3'};
+xvalues = {'12','18','24','30','36','42','48'};
+%[gX gY]= meshgrid(12:6:48,40:20:100);
+
+h = heatmap(xvalues,yvalues,cdata,'CellLabelColor','none','ColorLimits',[0 0.7]);
+set(gca,'FontSize',20);
+
+h.YDisplayLabels = repmat({''}, size(h.YData));  %remove row labels
+h.XDisplayLabels = repmat({''}, size(h.XData));  %remove row labels
+a2 = axes('Position', h.Position);               %new axis on top
+a2.Color = 'none';                               %new axis transparent
+a2.YTick = 1:size(h.ColorData,1);                %set y ticks to number of rows
+a2.XTick = 1:size(h.ColorData,2);                %Remove xtick
+ylim(a2, [0.5, size(h.ColorData,1)+.5])          %center the tick marks
+
+a2.YTickLabel = {'$R_0=40$','$R_0=60$','$R_0=80$','$R_0=100$'}; 
+
+xlim(a2, [0.5, size(h.ColorData,2)+.5])          %center the tick marks
+a2.XTickLabel = {'$12$','$18$','$24$','$30$','$36$','$42$','$48$'}; 
+set(gca,'TickLabelInterpreter','latex')
+set(gca,'FontSize',20);
+
+%% Fig. 6(d) optimal params J
+figure;
+matrix_vals = zeros(4,8);
+for i = 1:4
+    for j = 1:8
+        matrix_vals(5-i,j) = optimal_params_different_J(i,2,j)*conversion_factor*1e12;
+    end
+end    
+
+cdata = matrix_vals(:,1:7);
+yvalues = {'J = 0','J = 1','J = 2','J = 3'};
+xvalues = {'12','18','24','30','36','42','48'};
+%[gX gY]= meshgrid(12:6:48,40:20:100);
+
+h = heatmap(xvalues,yvalues,cdata,'CellLabelColor','none','ColorLimits',[0 2000]);
+set(gca,'FontSize',20);
+
+h.YDisplayLabels = repmat({''}, size(h.YData));  %remove row labels
+h.XDisplayLabels = repmat({''}, size(h.XData));  %remove row labels
+a2 = axes('Position', h.Position);               %new axis on top
+a2.Color = 'none';                               %new axis transparent
+a2.YTick = 1:size(h.ColorData,1);                %set y ticks to number of rows
+a2.XTick = 1:size(h.ColorData,2);                %Remove xtick
+ylim(a2, [0.5, size(h.ColorData,1)+.5])          %center the tick marks
+
+a2.YTickLabel = {'$J = 0$','$J = 1$','$J = 2$','$J = 3$'}; 
+
+xlim(a2, [0.5, size(h.ColorData,2)+.5])          %center the tick marks
+a2.XTickLabel = {'$12$','$18$','$24$','$30$','$36$','$42$','$48$'}; 
+set(gca,'TickLabelInterpreter','latex')
+set(gca,'FontSize',20);
+
+%% compute end state
+L_matrix_diff_J = zeros(4,8);
+E_matrix_diff_J = zeros(4,8);
+
+for i = 1:4
+    pars.J = i-1;
+for j = 1:8
+    optimal_param = [optimal_params_different_J(1,1,j),optimal_params_different_J(1,2,j)];
+    t = 0:dt:tf_vector(j);
+    Z = forward_euler(Z0, optimal_param, t, dt, noise_on, 0, pars);
+    E_matrix_diff_J(i,j) = Z(3,end);
+    L_matrix_diff_J(i,j) = Z(4,end);
+end
+end
+
+fitness_matrix_J = L_matrix_diff_J + E_matrix_diff_J;
+L_frac_matrix_J = L_matrix_diff_J./(L_matrix_diff_J + E_matrix_diff_J);
+  
+L_frac_matrix_J_saved = L_frac_matrix_J;
+fitness_matrix_J_saved = fitness_matrix_J;
+%save('L_frac_matrix_J_saved.mat','L_frac_matrix_J_saved')   %(only do once)
+%save('fitness_matrix_J_saved.mat','fitness_matrix_J_saved') %(only do once)
+
+%% Fig 6(e) frac_L J
+
+load('L_frac_matrix_J_saved.mat')
+load('fitness_matrix_J_saved.mat')
+
+figure;
+matrix_vals = zeros(4,8);
+for i = 1:4
+    for j = 1:8
+        matrix_vals(5-i,j) = L_frac_matrix_J_saved(i,j);
+    end
+end    
+
+cdata = matrix_vals(:,1:7);
+yvalues = {'J = 0','J = 1','J = 2','J = 3'};
+xvalues = {'12','18','24','30','36','42','48'};
+%[gX gY]= meshgrid(12:6:48,40:20:100);
+
+h = heatmap(xvalues,yvalues,cdata,'CellLabelColor','none','ColorLimits',[0.7 1]);
+set(gca,'FontSize',20);
+
+h.YDisplayLabels = repmat({''}, size(h.YData));  %remove row labels
+h.XDisplayLabels = repmat({''}, size(h.XData));  %remove row labels
+a2 = axes('Position', h.Position);               %new axis on top
+a2.Color = 'none';                               %new axis transparent
+a2.YTick = 1:size(h.ColorData,1);                %set y ticks to number of rows
+a2.XTick = 1:size(h.ColorData,2);                %Remove xtick
+ylim(a2, [0.5, size(h.ColorData,1)+.5])          %center the tick marks
+
+a2.YTickLabel = {'$J = 0$','$J = 1$','$J = 2$','$J = 3$'}; 
+xlim(a2, [0.5, size(h.ColorData,2)+.5])          %center the tick marks
+a2.XTickLabel = {'$12$','$18$','$24$','$30$','$36$','$42$','$48$'}; 
+
+set(gca,'TickLabelInterpreter','latex')
+set(gca,'FontSize',20);
+
+%% Fig. 6(f) growth rate J
+figure;
+matrix_vals = zeros(4,8);
+growth_rate = zeros(4,8);
+
+for i = 1:4
+    for j = 1:8
+        growth_rate(i,j) = (1/tf_vector(j))*log(fitness_matrix_J_saved(i,j)/E_0);
+        matrix_vals(5-i,j) = growth_rate(i,j);
+    end
+end    
+
+cdata = matrix_vals(:,1:7);
+yvalues = {'J = 0','J = 1','J = 2','J = 3'};
+xvalues = {'12','18','24','30','36','42','48'};
+%[gX gY]= meshgrid(12:6:48,40:20:100);
+
+h = heatmap(xvalues,yvalues,cdata,'CellLabelColor','none','ColorLimits',[0 0.7]);
+set(gca,'FontSize',20);
+
+h.YDisplayLabels = repmat({''}, size(h.YData));  %remove row labels
+h.XDisplayLabels = repmat({''}, size(h.XData));  %remove row labels
+a2 = axes('Position', h.Position);               %new axis on top
+a2.Color = 'none';                               %new axis transparent
+a2.YTick = 1:size(h.ColorData,1);                %set y ticks to number of rows
+a2.XTick = 1:size(h.ColorData,2);                %Remove xtick
+ylim(a2, [0.5, size(h.ColorData,1)+.5])          %center the tick marks
+
+a2.YTickLabel = {'$J = 0$','$J = 1$','$J = 2$','$J = 3$'}; 
+
+xlim(a2, [0.5, size(h.ColorData,2)+.5])          %center the tick marks
+a2.XTickLabel = {'$12$','$18$','$24$','$30$','$36$','$42$','$48$'}; 
+
+
+set(gca,'TickLabelInterpreter','latex')
+set(gca,'FontSize',20);
 
 %% figure S1 prob vs A for different production rates
 load('optimal_params_r0_40_j_0_sweep.mat')
-
-
 conversion_factor = 10^3*10^9/(6.022*10^23);    % ml, nano, mole
 
 figure;
