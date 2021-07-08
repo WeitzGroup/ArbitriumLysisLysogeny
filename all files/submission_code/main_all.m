@@ -11,9 +11,11 @@ fixed_prob = 0;
 
 %% params
 % known values
+for J_val = 0:3     % comment these 2 loops when running for multiple production rates
+for r0 = 40:20:100  % comment these 2 loops when running for multiple production rates
 pars.mu_max = 1.2;
 pars.R_in = 4;
-pars.J = 0;  
+pars.J = J_val;  
 pars.e = 5*10^(-7); 
 pars.d_R = 0.0;  
 pars.d_S = 0.075;
@@ -46,7 +48,7 @@ dt = 20/3600;    % dt = 20s, tf = 12 hours
 t = 0:dt:tf_vector(tf_index);
 
 %% initial concentrations
-R0 = 40;%25 
+R0 = r0;
 S0 = 10^7;
 E0 = 0;
 L0 = 0;
@@ -94,6 +96,7 @@ beta = 0.3;
 N = 5;
 cut_off_for_input_change = 0.01;
 loop_iter = 1;
+J = 10^10*ones(1, 30);
 J(loop_iter) = cost_function(Z0, optimal_input_old, t, dt, noise_on, fixed_prob, pars);
 
 %% termination condition
@@ -134,13 +137,17 @@ end
 
 end
 
-optimal_params_save = optimal_params_no_production;
+optimal_params = optimal_params_no_production;
 % save('optimal_params_r0_40_j_0.mat','optimal_params_save')
 %%
 name = ['optimal_params_r0_' num2str(R0) '_j_' num2str(pars.J) '.mat'];
 % name = ['optimal_params_r0_' num2str(R0) '_j_' num2str(pars.J) '_sweep.mat'];   % for different production rates
 % name = 'optimal_params_r0_40_j_0_low_production.mat'; % for low production rate
+
 folder=pwd;
 filepath = strcat(folder,'/data__files');
 matname = fullfile(filepath, name);
-save(matname, 'optimal_params_save')
+save(matname, 'optimal_params')
+
+end 
+end

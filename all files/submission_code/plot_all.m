@@ -9,7 +9,7 @@ addpath(genpath(strcat(folder,'/data__files')));
 
 
 load('optimal_params_r0_40_j_0.mat')
-%optimal_params_save = optimal_params_no_production;
+%optimal_params = optimal_params_no_production;
 
 %% params
 %% params
@@ -70,12 +70,12 @@ dt = 20/3600;
 mixed_prob = 0.5;   
 t = 0:dt:48;
 index_for_48_hours = 7;
-Z = forward_euler(Z0, optimal_params_save(:,index_for_48_hours), t, dt, noise_on, 0, pars);
+Z = forward_euler(Z0, optimal_params(:,index_for_48_hours), t, dt, noise_on, 0, pars);
 Z_48 = Z;
 %save('Z_48.mat','Z')    
-Z_fixed_lysis = forward_euler(Z0, optimal_params_save(:,index_for_48_hours), t, dt, noise_on, 0.01, pars);
-Z_fixed_mixed = forward_euler(Z0, optimal_params_save(:,index_for_48_hours), t, dt, noise_on, mixed_prob, pars);
-Z_fixed_lysogeny = forward_euler(Z0, optimal_params_save(:,index_for_48_hours), t, dt, noise_on, 1, pars);
+Z_fixed_lysis = forward_euler(Z0, optimal_params(:,index_for_48_hours), t, dt, noise_on, 0.01, pars);
+Z_fixed_mixed = forward_euler(Z0, optimal_params(:,index_for_48_hours), t, dt, noise_on, mixed_prob, pars);
+Z_fixed_lysogeny = forward_euler(Z0, optimal_params(:,index_for_48_hours), t, dt, noise_on, 1, pars);
 
 % lysis only
 figure;
@@ -206,14 +206,14 @@ conversion_factor = 10^3*10^9/(6.022*10^23);    % ml, nano, mole
 span_A_nanomolar = span_A*conversion_factor;
 
 figure;
-prob_A = zeros(length(optimal_params_save),length(span_A));
+prob_A = zeros(length(optimal_params),length(span_A));
 prob_final_times = [12,18,24,36,48];
 %color_cell = {'r','y','g','','c','',[250/255,107/255,242/255],''};
 color_cell = {[0,0,0],[0.2,0.2,0.2],[0.4,0.4,0.4],'',[0.6,0.6,0.6],'',[0.8,0.8,0.8],''};
-for tf_idx = 1:length(optimal_params_save)
+for tf_idx = 1:length(optimal_params)
     if (ismember(tf_vector(tf_idx), prob_final_times))   
     for i = 1:length(span_A)
-        prob_A(tf_idx, i) = probability(span_A(i), optimal_params_save(:,tf_idx), probability_switch_pt_initial_guess, noise_on, 0);
+        prob_A(tf_idx, i) = probability(span_A(i), optimal_params(:,tf_idx), probability_switch_pt_initial_guess, noise_on, 0);
     end   
     
     plot (span_A_nanomolar, prob_A(tf_idx,:), 'color', color_cell{tf_idx},'Linewidth', line_thickness)
@@ -252,7 +252,7 @@ load('optimal_params_r0_40_j_0.mat')
 Z_temp = zeros(length(tf_vector),7,length(0:dt:48));
 for i = 1:length(tf_vector)
     t = 0:dt:tf_vector(i);
-    Z = forward_euler(Z0, optimal_params_save(:,i), t, dt, noise_on, 0, pars);
+    Z = forward_euler(Z0, optimal_params(:,i), t, dt, noise_on, 0, pars);
     Z_temp(i,:,1:length(t)) = Z;
 end    
 
@@ -434,7 +434,7 @@ frac_end = state_final;
 for tf_idx = 1:length(tf_vector)
     dt = 20/3600;    % dt = 20s, tf = 12 hours
     t = 0:dt:tf_vector(tf_idx);
-    Z = forward_euler(Z0, optimal_params_save(:,tf_idx), t, dt, noise_on, 0, pars);
+    Z = forward_euler(Z0, optimal_params(:,tf_idx), t, dt, noise_on, 0, pars);
     state_final(:,tf_idx) = Z(3:4,end);
     frac_end(1,tf_idx) = state_final(1,tf_idx)/(state_final(1,tf_idx)+state_final(2,tf_idx));
     frac_end(2,tf_idx) = 1 - frac_end(1,tf_idx);
@@ -452,11 +452,11 @@ for tf_idx = 1:length(tf_vals)
     
     dt = 20/3600;    % dt = 20s, tf = 12 hours
     t = 0:dt:tf_vector(tf_vals(tf_idx));
-    Z = forward_euler(Z0, optimal_params_save(:,tf_vals(tf_idx)), t, dt, noise_on, 0, pars);
+    Z = forward_euler(Z0, optimal_params(:,tf_vals(tf_idx)), t, dt, noise_on, 0, pars);
         
-    Z_fixed_lysis = forward_euler(Z0, optimal_params_save(:,tf_vals(tf_idx)), t, dt, noise_on, 0.01, pars);
-    Z_fixed_mixed = forward_euler(Z0, optimal_params_save(:,tf_vals(tf_idx)), t, dt, noise_on, 0.5, pars);
-    Z_fixed_lysogeny = forward_euler(Z0, optimal_params_save(:,tf_vals(tf_idx)), t, dt, noise_on, 1, pars);
+    Z_fixed_lysis = forward_euler(Z0, optimal_params(:,tf_vals(tf_idx)), t, dt, noise_on, 0.01, pars);
+    Z_fixed_mixed = forward_euler(Z0, optimal_params(:,tf_vals(tf_idx)), t, dt, noise_on, 0.5, pars);
+    Z_fixed_lysogeny = forward_euler(Z0, optimal_params(:,tf_vals(tf_idx)), t, dt, noise_on, 1, pars);
     
     state_final_optimal(:,tf_idx) = Z(3:4,end);
     state_final_lysis(:,tf_idx) = Z_fixed_lysis(3:4,end);
@@ -503,7 +503,7 @@ for prob = 0:0.1:1
     if prob == 0
         prob_new = 0.01;
     end    
-    Z_temp = forward_euler(Z0, optimal_params_save(:,7), t, dt, noise_on, prob_new, pars);
+    Z_temp = forward_euler(Z0, optimal_params(:,7), t, dt, noise_on, prob_new, pars);
     Z_end(idx,1:2) = Z_temp(3:4,end);
     Z_end(idx,3) = Z_end(idx,1)+Z_end(idx,2);
 end
@@ -539,14 +539,14 @@ legend boxoff
 optimal_params_different_J = zeros(4,2,8);
 for i = 0:3
     load (['optimal_params_r0_40_j_' num2str(i) '.mat']);
-    optimal_params_different_J(i+1,:,:) = optimal_params_save;
+    optimal_params_different_J(i+1,:,:) = optimal_params;
 end    
 %save('optimal_params_different_J.mat','optimal_params_different_J');
 
 optimal_params_different_r0 = zeros(4,2,8);
 for i = 1:4
     load (['optimal_params_r0_' num2str(20+20*i) '_j_0.mat']);
-    optimal_params_different_r0(i,:,:) = optimal_params_save;
+    optimal_params_different_r0(i,:,:) = optimal_params;
 end 
 %save('optimal_params_different_r0.mat','optimal_params_different_r0');
 
@@ -843,7 +843,7 @@ conversion_factor = 10^3*10^9/(6.022*10^23);    % ml, nano, mole
 figure;
 prod_rate_vector_log = 5:0.25:8;
 prod_rate_vector = 10.^prod_rate_vector_log;
-plot(prod_rate_vector, conversion_factor*10^12*optimal_params_save(1:13,2,3), 'color','k', 'Marker',ms{1}, 'MarkerSize',9,'Linewidth', line_thickness,'LineStyle', ls{1})
+plot(prod_rate_vector, conversion_factor*10^12*optimal_params(1:13,2,3), 'color','k', 'Marker',ms{1}, 'MarkerSize',9,'Linewidth', line_thickness,'LineStyle', ls{1})
 
 xlabel('Generation~rate, $k_{L, I}$ ~$\mathrm{[molecules/cell~h^{-1}]}$','Interpreter','latex')
 ylabel('Switching~concentration [nM]','Interpreter','latex')
@@ -860,7 +860,7 @@ fig.PaperUnits = 'inches';
 pbaspect([2.5 1.5 1])
 
 xvals = prod_rate_vector;
-yvals = conversion_factor*10^12*optimal_params_save(1:13,2,3);
+yvals = conversion_factor*10^12*optimal_params(1:13,2,3);
 
 Sxx = sum(xvals.^2) - sum(xvals)^2/length(xvals);
 Syy = sum(yvals.^2) - sum(yvals)^2/length(yvals);
