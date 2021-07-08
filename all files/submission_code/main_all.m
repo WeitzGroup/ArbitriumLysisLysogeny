@@ -138,7 +138,8 @@ optimal_params_save = optimal_params_no_production;
 % save('optimal_params_r0_40_j_0.mat','optimal_params_save')
 %%
 name = ['optimal_params_r_' num2str(R0) '_j_' num2str(pars.J) '.mat'];
-%name = ['optimal_params_r_' num2str(R0) '_j_' num2str(pars.J) '_sweep.mat'];   % for different production rates
+% name = ['optimal_params_r_' num2str(R0) '_j_' num2str(pars.J) '_sweep.mat'];   % for different production rates
+% name = ['optimal_params_r_' num2str(R0) '_j_' num2str(pars.J) '_low_production.mat'];    % for low production rate
 folder=pwd;
 filepath = strcat(folder,'/data__files');
 matname = fullfile(filepath, name);
