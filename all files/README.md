@@ -45,7 +45,7 @@ Line 46 changes time horizon (currently fixed at 24 hours, can be done from 12 t
  
 Figures:
 
-Run file named 'plot_all.m' to generate all figures in paper - no changes needed to file (all relevant data to generate figures is already included in repo as .mat files). These mat files can be generated via main_all.m by changing the values of R0 (line 49) and pars.J (line 16) in 'main_all.m'. For example, to generate 'optimal_params_r0_60_j_2.mat', set R0 to 60 and pars.J to 2 and run 'main_all.m'. For Fig. 3b,  
+Run file named 'plot_all.m' to generate all figures in paper - no changes needed to file (all relevant data to generate figures is already included in repo as .mat files). These mat files can be generated via main_all.m by changing the values of R0 (line 49) and pars.J (line 16) in 'main_all.m'. For example, to generate 'optimal_params_r0_60_j_2.mat', set R0 to 60 and pars.J to 2 and run 'main_all.m'. For Fig. 3b, change pars.K_A_L and pars.K_A_I to 10^7 on lines 30 and 31 and save file as 'optimal_params_r_40_j_0_low_production.mat' (uncomment line 142)
 
 Figure 2:
 Temperate phage-bacteria infection dynamics for different fixed probabilities of lysogeny (P= 0, P= 0.5 or P= 1 wherePis the probability of lysogeny) for 48 hours with an MOI of 0.01. 
