@@ -35,7 +35,7 @@ pars.beta = 50;
 prod_rate_iter = 0;    
 for prod_rate = prod_rate_vector    %(loop over different production rates)
 prod_rate_iter = prod_rate_iter + 1;    
-disp(prod_rate)
+%disp(prod_rate)
 %pars.k_A_L = 10^(prod_rate); %(only for sweeping over different production rates)
 %pars.k_A_I = 10^(prod_rate);
 
@@ -68,6 +68,7 @@ J_max = 0;
 
 sigmoid_shaping_values = [-10 0.0001 1 10 ];
 switch_point_values = [10^(-8) 0.0001 0.1 0.3 1 2 5 10 20 30 50 100 200 1000];
+%optimal_input_brute = [1;1];
 J_brute = zeros(length(sigmoid_shaping_values), length(switch_point_values));
 for sigmoid_shaping = sigmoid_shaping_values
     index_1 = index_1+1;
@@ -129,8 +130,16 @@ optimal_params_save(prod_rate_iter,:,tf_index) = optimal_input_old;
 optimal_params_no_production(:,tf_index) = optimal_params_save(1,:,tf_index);
 
 end
+
+
 end
 
 optimal_params_save = optimal_params_no_production;
-save('optimal_params_r0_40_j_0.mat','optimal_params_save')
-
+% save('optimal_params_r0_40_j_0.mat','optimal_params_save')
+%%
+name = ['optimal_params_r_' num2str(R0) '_j_' num2str(pars.J) '.mat'];
+%name = ['optimal_params_r_' num2str(R0) '_j_' num2str(pars.J) '_sweep.mat'];   % for different production rates
+folder=pwd;
+filepath = strcat(folder,'/data__files');
+matname = fullfile(filepath, name);
+save(matname, 'optimal_params_save')

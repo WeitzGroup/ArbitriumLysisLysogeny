@@ -2,6 +2,12 @@ close all
 
 noise_on = 1;
 
+% get current path
+folder=pwd;
+% Addpath to subfolders
+addpath(genpath(strcat(folder,'/data__files')));
+
+
 load('optimal_params_r0_40_j_0.mat')
 %optimal_params_save = optimal_params_no_production;
 
@@ -42,7 +48,7 @@ set(groot,'defaultAxesTickLabelInterpreter','latex');
 set(groot,'defaulttextinterpreter','latex');
 set(groot,'defaultLegendInterpreter','latex');
 
-color_cell = {'k','k','k','k'};
+%color_cell = {'k','k','k','k'};
 ls = {'-','--',':','-.'};
 ms = {'o','s','d','h'};
 line_thickness = 3;
@@ -187,8 +193,11 @@ legend boxoff
 
 
 %% figure 3(a) in paper; prob vs A for different tf
-% for 3(b) need to rerun with different production rate
+% for 3(b) need to rerun with different production rate, uncomment line
+% below
+% load('optimal_params_r0_40_j_0_low_production.mat')
 
+span_A = zeros(1, 1001);
 for i = 0:1000
     span_A(i+1) = 10^(8 + i/1000*8);
 end
@@ -219,9 +228,11 @@ xlim([1e0,1e3]);
 xticks([ 1 10 100 1000])
 xticklabels({1,10,100,1000})
 
+% xlim([1e-1,1e2]);         % use with low production rate
+% xticks([1e-1 1 10 100])
+% xticklabels({0.1,1,10,100})
+
 set(gca,'TickLabelInterpreter','latex')
-%xticks([10 10.5 11 11.5 12 12.5 13 13.5 14])
-%xticklabels({'10^{10}','10^{10.5}','10^{11}','10^{11.5}','10^{12}','10^{12.5}','10^{13}','10^{13.5}','10^{14}'})
 fig.PaperUnits = 'inches';
 set(gcf, 'color', 'white');
 set(gca, 'color', 'white');
@@ -231,12 +242,10 @@ set(gca,'xscale','log')
 % set(gca,'TickLabelInterpreter', 'latex');
 fig.PaperUnits = 'inches';
 pbaspect([2.5 1.5 1])
-%legend('2 hours','6 hours','12 hours','24 hours','36 hours','48 hours','72 hours','96 hours','120 hours','240 hours')
-%legend('4 hours','8 hours','10 hours','12 hours','14 hours', '16 hours')
-%legend('12 hours','18 hours','24 hours','30 hours','36 hours', '42 hours', '48 hours')
 legend('12 hours','18 hours','24 hours','36 hours','48 hours','Interpreter','latex')
 legend boxoff
 
+load('optimal_params_r0_40_j_0.mat')
 
 %% Fig. 4 population dynamics for different tf (12, 18, 24, 48)
 
@@ -532,14 +541,14 @@ for i = 0:3
     load (['optimal_params_r0_40_j_' num2str(i) '.mat']);
     optimal_params_different_J(i+1,:,:) = optimal_params_save;
 end    
-save('optimal_params_different_J.mat','optimal_params_different_J');
+%save('optimal_params_different_J.mat','optimal_params_different_J');
 
 optimal_params_different_r0 = zeros(4,2,8);
 for i = 1:4
     load (['optimal_params_r0_' num2str(20+20*i) '_j_0.mat']);
     optimal_params_different_r0(i,:,:) = optimal_params_save;
 end 
-save('optimal_params_different_r0.mat','optimal_params_different_r0');
+%save('optimal_params_different_r0.mat','optimal_params_different_r0');
 
 
 phi = 3.4*10^(-10);
@@ -560,7 +569,7 @@ end
 cdata = matrix_vals(:,1:7);
 yvalues = {'J = 0','J = 1','J = 2','J = 3'};
 xvalues = {'12','18','24','30','36','42','48'};
-[gX gY]= meshgrid(12:6:48,40:20:100);
+%[gX gY]= meshgrid(12:6:48,40:20:100);
 
 h = heatmap(xvalues,yvalues,cdata,'CellLabelColor','none','ColorLimits',[0 2000]);
 set(gca,'FontSize',20);
@@ -625,7 +634,7 @@ end
 cdata = matrix_vals(:,1:7);
 yvalues = {'J = 0','J = 1','J = 2','J = 3'};
 xvalues = {'12','18','24','30','36','42','48'};
-[gX gY]= meshgrid(12:6:48,40:20:100);
+%[gX gY]= meshgrid(12:6:48,40:20:100);
 
 h = heatmap(xvalues,yvalues,cdata,'CellLabelColor','none','ColorLimits',[0 0.7]);
 set(gca,'FontSize',20);
@@ -660,7 +669,7 @@ end
 cdata = matrix_vals(:,1:7);
 yvalues = {'J = 0','J = 1','J = 2','J = 3'};
 xvalues = {'12','18','24','30','36','42','48'};
-[gX gY]= meshgrid(12:6:48,40:20:100);
+%[gX gY]= meshgrid(12:6:48,40:20:100);
 
 h = heatmap(xvalues,yvalues,cdata,'CellLabelColor','none','ColorLimits',[0.7 1]);
 set(gca,'FontSize',20);
@@ -698,7 +707,7 @@ end
 cdata = matrix_vals(:,1:7);
 yvalues = {'R_0 = 40','R_0 = 60','R_0 = 80','R_0 = 100'};
 xvalues = {'12','18','24','30','36','42','48'};
-[gX gY]= meshgrid(12:6:48,40:20:100);
+%[gX gY]= meshgrid(12:6:48,40:20:100);
 
 h = heatmap(xvalues,yvalues,cdata,'CellLabelColor','none','ColorLimits',[0 2000]);
 set(gca,'FontSize',20);
@@ -765,7 +774,7 @@ end
 cdata = matrix_vals(:,1:7);
 yvalues = {'J = 0','J = 1','J = 2','J = 3'};
 xvalues = {'12','18','24','30','36','42','48'};
-[gX gY]= meshgrid(12:6:48,40:20:100);
+%[gX gY]= meshgrid(12:6:48,40:20:100);
 
 h = heatmap(xvalues,yvalues,cdata,'CellLabelColor','none','ColorLimits',[0 0.7]);
 set(gca,'FontSize',20);
@@ -801,7 +810,7 @@ end
 cdata = matrix_vals(:,1:7);
 yvalues = {'J = 0','J = 1','J = 2','J = 3'};
 xvalues = {'12','18','24','30','36','42','48'};
-[gX gY]= meshgrid(12:6:48,40:20:100);
+%[gX gY]= meshgrid(12:6:48,40:20:100);
 
 h = heatmap(xvalues,yvalues,cdata,'CellLabelColor','none','ColorLimits',[0.7 1]);
 set(gca,'FontSize',20);
