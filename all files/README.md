@@ -39,6 +39,15 @@ Run file named 'main_all.m'; generates a mat file with saved optimal parameters.
 Parameters to edit (present in file main_all.m): 
 
 Line 5 changes the production rate (from 10^5 to 10^8 for Fig. S1, currently set to single value of 5 * 10^7); Fig. 3 used production rates of 10^7 and 5 * 10^7; other results only use base param of 5 * 10^7
+
+Data files:
+
+File name 'optimal_params_r0_X_j_Y.mat' stores the optimal parameters for initial conditions of R0 = X and pars.J = Y; these optimal params are used for generating the figures. 
+
+File name 'optimal_params_r0_40_j_0_low_production.mat' stores the optimal params for a production rate of 10^7 (instead of 5 * 10^7); used for Fig. 3b
+
+File name 'optimal_params_r0_40_j_0_sweep.mat' stores optimal params for different production rates varying from 10^5 to 10^8. Used for Fig. S1
+
  
 Figures:
 
