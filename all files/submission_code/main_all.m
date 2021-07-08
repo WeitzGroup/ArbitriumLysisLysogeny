@@ -2,7 +2,7 @@ close all
 
 tf_vector = [12,18,24,30,36,42,48,72];
 %load('optimal_params_sensing_noise_latest.mat')
-prod_rate_vector = 5; %5:0.25:8.5; % to sweep for different generation rates
+prod_rate_vector = 5; %5:0.25:8; % to sweep for different generation rates
 optimal_params_save = zeros(length(prod_rate_vector),2,length(tf_vector));
 optimal_params_no_production = zeros(2, length(tf_vector));
 
