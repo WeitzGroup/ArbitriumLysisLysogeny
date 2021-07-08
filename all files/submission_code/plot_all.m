@@ -193,9 +193,6 @@ legend boxoff
 
 
 %% figure 3(a) in paper; prob vs A for different tf
-% for 3(b) need to rerun with different production rate, uncomment line
-% below
-% load('optimal_params_r0_40_j_0_low_production.mat')
 
 span_A = zeros(1, 1001);
 for i = 0:1000
@@ -228,9 +225,46 @@ xlim([1e0,1e3]);
 xticks([ 1 10 100 1000])
 xticklabels({1,10,100,1000})
 
-% xlim([1e-1,1e2]);         % use with low production rate
-% xticks([1e-1 1 10 100])
-% xticklabels({0.1,1,10,100})
+
+set(gca,'TickLabelInterpreter','latex')
+fig.PaperUnits = 'inches';
+set(gcf, 'color', 'white');
+set(gca, 'color', 'white');
+set(gca,'FontSize', 30);
+set(gca,'xscale','log')
+
+% set(gca,'TickLabelInterpreter', 'latex');
+fig.PaperUnits = 'inches';
+pbaspect([2.5 1.5 1])
+legend('12 hours','18 hours','24 hours','36 hours','48 hours','Interpreter','latex')
+legend boxoff
+
+%% figure 3(b) in paper; prob vs A for different tf (low production)
+load('optimal_params_r0_40_j_0_low_production.mat')
+
+figure;
+prob_A = zeros(length(optimal_params),length(span_A));
+prob_final_times = [12,18,24,36,48];
+%color_cell = {'r','y','g','','c','',[250/255,107/255,242/255],''};
+color_cell = {[0,0,0],[0.2,0.2,0.2],[0.4,0.4,0.4],'',[0.6,0.6,0.6],'',[0.8,0.8,0.8],''};
+for tf_idx = 1:length(optimal_params)
+    if (ismember(tf_vector(tf_idx), prob_final_times))   
+    for i = 1:length(span_A)
+        prob_A(tf_idx, i) = probability(span_A(i), optimal_params(:,tf_idx), probability_switch_pt_initial_guess, noise_on, 0);
+    end   
+    
+    plot (span_A_nanomolar, prob_A(tf_idx,:), 'color', color_cell{tf_idx},'Linewidth', line_thickness)
+    hold on
+    end
+end    
+
+xlabel('Arbitrium~concentration, $A$ ~$\mathrm{[nM]}$','Interpreter','latex')
+ylabel('Probability~of~lysogeny, $P_{opt}(A)$','Interpreter','latex')
+ylim ([0,1]);
+
+xlim([1e-1,1e2]);         % use with low production rate
+xticks([1e-1 1 10 100])
+xticklabels({0.1,1,10,100})
 
 set(gca,'TickLabelInterpreter','latex')
 fig.PaperUnits = 'inches';
