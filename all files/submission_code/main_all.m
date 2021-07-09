@@ -1,6 +1,6 @@
 close all
 
-option = 3; % set 1 for iterating over r0 and J, 2 for iterating over production rates, 3 for low production rate
+option = 1; % set 1 for iterating over r0 and J, 2 for iterating over production rates, 3 for low production rate
 
 
 
