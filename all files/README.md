@@ -8,6 +8,13 @@ Navigating the code:
 
 main_all.m calls helper function files to generate optimal switching and shaping parameters for different time horizons/resource conditions/arbitrium production rate etc. All optimal parameters have been generated and saved as mat files for quick generation of results. Once the parameters are saved, the plot_all.m file needs to be run to generate plots using this data. 
 
+There are 3 options for running main_all.m (line 3, option = X). Option 1 corresponds to iterating over different values of R0 (initial resource concentration) and J(resource influx); option 2 corresponds to iterating over different production rates of arbitrium - from 10^5 to 10^8 (relavant to Fig. S1); option 3 is for lower production rate of 10^7 - for Fig. 3(b) in manuscript.
+
+Option 1 generates all mat files of the format 'optimal_params_r0_X_j_Y.mat' (where R0 = X and J = Y) 
+Option 2 generates mat file 'optimal_params_r0_0_j_0_sweep.mat' (sweeping over different production rates of arbitrium - from 10^5 to 10^8)
+Option 3 generates mat file 'optimal_params_r0_0_j_0_low_production.mat' (for production rate of arbitrium of 10^7)
+
+
 Helper functions and description:
 
 monod.m - returns the monod function value (used in system dynamics)
@@ -51,7 +58,7 @@ File name 'optimal_params_r0_40_j_0_sweep.mat' stores optimal params for differe
  
 Figures:
 
-Run file named 'plot_all.m' to generate all figures in paper - no changes needed to file (all relevant data to generate figures is already included in repo as .mat files). These mat files can be generated via main_all.m by changing the values of R0 (line 49) and pars.J (line 16) in 'main_all.m'. For example, to generate 'optimal_params_r0_60_j_2.mat', set R0 to 60 and pars.J to 2 and run 'main_all.m'. For Fig. 3b, change pars.K_A_L and pars.K_A_I to 10^7 on lines 30 and 31 and save file as 'optimal_params_r_40_j_0_low_production.mat' (uncomment line 142)
+Run file named 'plot_all.m' to generate all figures in paper - no changes needed to file (all relevant data to generate figures is already included in repo as .mat files). These mat files can be generated via main_all.m by changing the option (line 3 of 'main_all.m'). 
 
 Figure 2:
 Temperate phage-bacteria infection dynamics for different fixed probabilities of lysogeny (P= 0, P= 0.5 or P= 1 wherePis the probability of lysogeny) for 48 hours with an MOI of 0.01. 
