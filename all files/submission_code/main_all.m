@@ -1,8 +1,25 @@
 close all
 
-tf_vector = [12,18,24,30,36,42,48,72];
-%load('optimal_params_sensing_noise_latest.mat')
-prod_rate_vector = 5; %5:0.25:8; % to sweep for different generation rates
+option = 3; % set 1 for iterating over r0 and J, 2 for iterating over production rates, 3 for low production rate
+
+
+
+if option == 1 | option == 3
+    prod_rate_vector = 5;  % fixed production rate
+    tf_vector = [12,18,24,30,36,42,48,72];
+elseif option == 2    
+    prod_rate_vector = 5:0.25:8; % to sweep for different generation rates
+    tf_vector = 24;
+end
+
+if option == 2 | option ==3
+    J_val_vec = 0;
+    r0_vec = 40;
+else
+    J_val_vec = [0, 1, 2, 3];
+    r0_vec = [40, 60, 80, 100];
+end
+
 optimal_params_save = zeros(length(prod_rate_vector),2,length(tf_vector));
 optimal_params_no_production = zeros(2, length(tf_vector));
 
@@ -11,8 +28,8 @@ fixed_prob = 0;
 
 %% params
 % known values
-for J_val = 0:3     % comment these 2 loops when running for multiple production rates
-for r0 = 40:20:100  % comment these 2 loops when running for multiple production rates
+for J_val = J_val_vec    
+for r0 = r0_vec  
 pars.mu_max = 1.2;
 pars.R_in = 4;
 pars.J = J_val;  
@@ -34,15 +51,23 @@ pars.k_A_I = 5*10^7;
 pars.A0 = 10^12; 
 pars.beta = 50;
 
+if option == 3
+    pars.k_A_L = 10^7; 
+    pars.k_A_I = 10^7; 
+end    
+
 prod_rate_iter = 0;    
 for prod_rate = prod_rate_vector    %(loop over different production rates)
 prod_rate_iter = prod_rate_iter + 1;    
 %disp(prod_rate)
-%pars.k_A_L = 10^(prod_rate); %(only for sweeping over different production rates)
-%pars.k_A_I = 10^(prod_rate);
+
+if option ==2
+    pars.k_A_L = 10^(prod_rate); %(only for sweeping over different production rates)
+    pars.k_A_I = 10^(prod_rate);
+end
 
 for tf_index = 1:length(tf_vector) %(loop over different time horizons)
-disp(tf_index)
+%disp(tf_index)
 %% time vector
 dt = 20/3600;    % dt = 20s, tf = 12 hours
 t = 0:dt:tf_vector(tf_index);
@@ -134,20 +159,28 @@ optimal_params_no_production(:,tf_index) = optimal_params_save(1,:,tf_index);
 
 end
 
-
-end
-
 optimal_params = optimal_params_no_production;
-% save('optimal_params_r0_40_j_0.mat','optimal_params_save')
-%%
-name = ['optimal_params_r0_' num2str(R0) '_j_' num2str(pars.J) '.mat'];
-% name = ['optimal_params_r0_' num2str(R0) '_j_' num2str(pars.J) '_sweep.mat'];   % for different production rates
-% name = 'optimal_params_r0_40_j_0_low_production.mat'; % for low production rate
+
+
+if option == 1
+    name = ['optimal_params_r0_' num2str(R0) '_j_' num2str(pars.J) '.mat'];
+elseif option ==2
+    name = 'optimal_params_r0_40_j_0_sweep.mat';   % for different production rates
+elseif option ==3
+    name = 'optimal_params_r0_40_j_0_low_production.mat'; % for low production rate
+end
 
 folder=pwd;
 filepath = strcat(folder,'/data__files');
 matname = fullfile(filepath, name);
-save(matname, 'optimal_params')
+if option == 1 | option ==3
+    save(matname, 'optimal_params')
+elseif option ==2
+    save(matname, 'optimal_params_save')
+end
+
+end
+
 
 end 
 end

@@ -608,6 +608,7 @@ xvalues = {'12','18','24','30','36','42','48'};
 %[gX gY]= meshgrid(12:6:48,40:20:100);
 
 h = heatmap(xvalues,yvalues,cdata,'CellLabelColor','none','ColorLimits',[0 2000]);
+h.Colormap = parula;
 set(gca,'FontSize',20);
 
 h.YDisplayLabels = repmat({''}, size(h.YData));  %remove row labels
@@ -651,8 +652,8 @@ fitness_matrix_r0_saved = fitness_matrix_r0;
 %save('L_frac_matrix_r0_saved.mat','L_frac_matrix_r0_saved')   %(only do once)
 %save('fitness_matrix_r0_saved.mat','fitness_matrix_r0_saved') %(only do once)
 %% Fig. 6(b) growth rate r0
-load('L_frac_matrix_r0_saved.mat')
-load('fitness_matrix_r0_saved.mat')
+%load('L_frac_matrix_r0_saved.mat')
+%load('fitness_matrix_r0_saved.mat')
 
 figure;
 matrix_vals = zeros(4,8);
@@ -663,11 +664,13 @@ for i = 1:4
 end    
 
 cdata = matrix_vals(:,1:7);
-yvalues = {'J = 0','J = 1','J = 2','J = 3'};
+yvalues = {'R_0 = 40','R_0 = 60','R_0 = 80','R_0 = 100'};
 xvalues = {'12','18','24','30','36','42','48'};
 %[gX gY]= meshgrid(12:6:48,40:20:100);
 
 h = heatmap(xvalues,yvalues,cdata,'CellLabelColor','none','ColorLimits',[0.7 1]);
+h.Colormap = parula;
+
 set(gca,'FontSize',20);
 
 h.YDisplayLabels = repmat({''}, size(h.YData));  %remove row labels
@@ -706,6 +709,8 @@ xvalues = {'12','18','24','30','36','42','48'};
 %[gX gY]= meshgrid(12:6:48,40:20:100);
 
 h = heatmap(xvalues,yvalues,cdata,'CellLabelColor','none','ColorLimits',[0 0.7]);
+h.Colormap = parula;
+
 set(gca,'FontSize',20);
 
 h.YDisplayLabels = repmat({''}, size(h.YData));  %remove row labels
@@ -738,6 +743,8 @@ xvalues = {'12','18','24','30','36','42','48'};
 %[gX gY]= meshgrid(12:6:48,40:20:100);
 
 h = heatmap(xvalues,yvalues,cdata,'CellLabelColor','none','ColorLimits',[0 2000]);
+h.Colormap = parula;
+
 set(gca,'FontSize',20);
 
 h.YDisplayLabels = repmat({''}, size(h.YData));  %remove row labels
@@ -762,7 +769,7 @@ E_matrix_diff_J = zeros(4,8);
 for i = 1:4
     pars.J = i-1;
 for j = 1:8
-    optimal_param = [optimal_params_different_J(1,1,j),optimal_params_different_J(1,2,j)];
+    optimal_param = [optimal_params_different_J(i,1,j),optimal_params_different_J(i,2,j)];
     t = 0:dt:tf_vector(j);
     Z = forward_euler(Z0, optimal_param, t, dt, noise_on, 0, pars);
     E_matrix_diff_J(i,j) = Z(3,end);
@@ -779,9 +786,8 @@ fitness_matrix_J_saved = fitness_matrix_J;
 %save('fitness_matrix_J_saved.mat','fitness_matrix_J_saved') %(only do once)
 
 %% Fig 6(e) frac_L J
-
-load('L_frac_matrix_J_saved.mat')
-load('fitness_matrix_J_saved.mat')
+%load('L_frac_matrix_J_saved.mat')
+%load('fitness_matrix_J_saved.mat')
 
 figure;
 matrix_vals = zeros(4,8);
@@ -797,6 +803,8 @@ xvalues = {'12','18','24','30','36','42','48'};
 %[gX gY]= meshgrid(12:6:48,40:20:100);
 
 h = heatmap(xvalues,yvalues,cdata,'CellLabelColor','none','ColorLimits',[0.7 1]);
+h.Colormap = parula;
+
 set(gca,'FontSize',20);
 
 h.YDisplayLabels = repmat({''}, size(h.YData));  %remove row labels
@@ -832,6 +840,8 @@ xvalues = {'12','18','24','30','36','42','48'};
 %[gX gY]= meshgrid(12:6:48,40:20:100);
 
 h = heatmap(xvalues,yvalues,cdata,'CellLabelColor','none','ColorLimits',[0 0.7]);
+h.Colormap = parula;
+
 set(gca,'FontSize',20);
 
 h.YDisplayLabels = repmat({''}, size(h.YData));  %remove row labels
@@ -858,7 +868,7 @@ conversion_factor = 10^3*10^9/(6.022*10^23);    % ml, nano, mole
 figure;
 prod_rate_vector_log = 5:0.25:8;
 prod_rate_vector = 10.^prod_rate_vector_log;
-plot(prod_rate_vector, conversion_factor*10^12*optimal_params(1:13,2,3), 'color','k', 'Marker',ms{1}, 'MarkerSize',9,'Linewidth', line_thickness,'LineStyle', ls{1})
+plot(prod_rate_vector, conversion_factor*10^12*optimal_params_save(1:13,2,1), 'color','k', 'Marker',ms{1}, 'MarkerSize',9,'Linewidth', line_thickness,'LineStyle', ls{1})
 
 xlabel('Generation~rate, $k_{L, I}$ ~$\mathrm{[molecules/cell~h^{-1}]}$','Interpreter','latex')
 ylabel('Switching~concentration [nM]','Interpreter','latex')
@@ -875,7 +885,7 @@ fig.PaperUnits = 'inches';
 pbaspect([2.5 1.5 1])
 
 xvals = prod_rate_vector;
-yvals = conversion_factor*10^12*optimal_params(1:13,2,3);
+yvals = conversion_factor*10^12*optimal_params_save(1:13,2,1);
 
 Sxx = sum(xvals.^2) - sum(xvals)^2/length(xvals);
 Syy = sum(yvals.^2) - sum(yvals)^2/length(yvals);
