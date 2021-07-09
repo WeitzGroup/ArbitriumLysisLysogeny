@@ -10,9 +10,9 @@ main_all.m calls helper function files to generate optimal switching and shaping
 
 There are 3 options for running main_all.m (line 3, option = X). Option 1 corresponds to iterating over different values of R0 (initial resource concentration) and J(resource influx); option 2 corresponds to iterating over different production rates of arbitrium - from 10^5 to 10^8 (relavant to Fig. S1); option 3 is for lower production rate of 10^7 - for Fig. 3(b) in manuscript.
 
-Option 1 generates all mat files of the format 'optimal_params_r0_X_j_Y.mat' (where R0 = X and J = Y) 
-Option 2 generates mat file 'optimal_params_r0_40_j_0_sweep.mat' (sweeping over different production rates of arbitrium - from 10^5 to 10^8)
-Option 3 generates mat file 'optimal_params_r0_40_j_0_low_production.mat' (for production rate of arbitrium of 10^7)
+Option 1 generates all mat files of the format 'optimal_params_r0_X_j_Y.mat' (where R0 = X and J = Y)  (runtime ~15 minutes)
+Option 2 generates mat file 'optimal_params_r0_40_j_0_sweep.mat' (sweeping over different production rates of arbitrium - from 10^5 to 10^8) (runtime ~10 minutes)
+Option 3 generates mat file 'optimal_params_r0_40_j_0_low_production.mat' (for production rate of arbitrium of 10^7) (runtime ~5 minutes)
 
 
 Helper functions and description (in folder submission_code/helper_functions):
