@@ -1,9 +1,6 @@
 close all
 
-option = 1; % set 1 for iterating over r0 and J, 2 for iterating over production rates, 3 for low production rate
-
-
-
+option = 3; % set 1 for iterating over r0 and J, 2 for iterating over production rates, 3 for low production rate
 if option == 1 | option == 3
     prod_rate_vector = 5;  % fixed production rate
     tf_vector = [12,18,24,30,36,42,48,72];
@@ -19,6 +16,10 @@ else
     J_val_vec = [0, 1, 2, 3];
     r0_vec = [40, 60, 80, 100];
 end
+
+folder=pwd;
+filepath = strcat(folder,'/data__files');
+addpath(genpath(strcat(folder,'/helper_functions')));
 
 optimal_params_save = zeros(length(prod_rate_vector),2,length(tf_vector));
 optimal_params_no_production = zeros(2, length(tf_vector));

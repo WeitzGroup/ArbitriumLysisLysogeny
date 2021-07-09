@@ -6,7 +6,7 @@ noise_on = 1;
 folder=pwd;
 % Addpath to subfolders
 addpath(genpath(strcat(folder,'/data__files')));
-
+addpath(genpath(strcat(folder,'/helper_functions')));
 
 load('optimal_params_r0_40_j_0.mat')
 %optimal_params = optimal_params_no_production;
