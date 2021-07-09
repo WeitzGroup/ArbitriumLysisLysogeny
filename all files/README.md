@@ -15,7 +15,7 @@ Option 2 generates mat file 'optimal_params_r0_40_j_0_sweep.mat' (sweeping over 
 Option 3 generates mat file 'optimal_params_r0_40_j_0_low_production.mat' (for production rate of arbitrium of 10^7)
 
 
-Helper functions and description:
+Helper functions and description (in folder submission_code/helper_functions):
 
 monod.m - returns the monod function value (used in system dynamics)
 
@@ -47,7 +47,7 @@ Parameters to edit (present in file main_all.m):
 
 Line 5 changes the production rate (from 10^5 to 10^8 for Fig. S1, currently set to single value of 5 * 10^7); Fig. 3 used production rates of 10^7 and 5 * 10^7; other results only use base param of 5 * 10^7
 
-Data files:
+Data files (in submission_code/data__files):
 
 File name 'optimal_params_r0_X_j_Y.mat' stores the optimal parameters for initial conditions of R0 = X and pars.J = Y; these optimal params are used for generating the figures. 
 
@@ -58,7 +58,7 @@ File name 'optimal_params_r0_40_j_0_sweep.mat' stores optimal params for differe
  
 Figures:
 
-Run file named 'plot_all.m' to generate all figures in paper - no changes needed to file (all relevant data to generate figures is already included in repo as .mat files). These mat files can be generated via main_all.m by changing the option (line 3 of 'main_all.m'). 
+Run file named 'plot_all.m' (in submission_code) to generate all figures in paper - no changes needed to file (all relevant data to generate figures is already included in repo as .mat files). These mat files can be generated via main_all.m by changing the option (line 3 of 'main_all.m'). 
 
 Figure 2:
 Temperate phage-bacteria infection dynamics for different fixed probabilities of lysogeny (P= 0, P= 0.5 or P= 1 wherePis the probability of lysogeny) for 48 hours with an MOI of 0.01. 
